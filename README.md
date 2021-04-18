@@ -9,7 +9,7 @@
 3. 域名 CNAME 指向
 4. HTTP 响应 Server 字段
 
-最终发现 CNAME 稍微比起其他方案靠谱些。因为国内使用 CDN 产品，会配置时会让你填入要加速的域名和IP，之后系统给分配一个 CDN 域名，让把自己的域名 CNAME 指向它。
+最终发现 CNAME 稍微比起其他方案靠谱些。因为国内使用 CDN 产品，会配置时会让你填入要加速的域名和 IP，之后系统给分配一个 CDN 域名，让把自己的域名 CNAME 指向它。
 
 
 # Usage
@@ -49,7 +49,7 @@ zhuxian3.wanmei.com,wanmei.com,null
 ...
 ```
 
-或者加入 `.bash_profile` 直接像命令一样调用。
+或者加入 `.bash_profile` 像命令一样调用。
 
 ```shell
 echo -e '\n# CDN 识别\ncdn_identification() {\n    for d in $(sort -u ${1})\n    do\n        check_domain=$(host -t cname $d | grep "is an alias for" | awk "{print $6}" | gawk '\'BEGIN{FS=\".\"\; OFS=\".\"} {print $\(NF-2\),$\(NF-1\)}\'')\n\n        if [[ -z $check_domain ]]; then\n            continue\n\n        fi\n\n        check_status=$(jq -r ".[\"${check_domain}\"].name" ./cdn.json)\n        if [[ $check_status != 'null' ]]; then\n            echo $d,$check_status\n        else\n            echo  "$d,$check_domain,$check_status"\n        fi\n    done\n}' >> $HOME/.bash_profile
